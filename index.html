@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-btn {
+            padding: 18px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn:active {
+            transform: scale(0.98);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-on {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-on:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-off {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+        }
+
+        .btn-off:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(238, 9, 121, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.loading {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .control-btn {
+                padding: 16px 25px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .control-btn {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Internet Control</h1>
+        <p class="subtitle">Manage your internet connection</p>
+        
+        <div class="button-group">
+            <button id="btnOn" class="control-btn btn-on" onclick="toggleInternet('on')">
+                ✓ Turn ON Internet
+            </button>
+            <button id="btnOff" class="control-btn btn-off" onclick="toggleInternet('off')">
+                ✕ Turn OFF Internet
+            </button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const webhooks = {
+            on: 'https://n8n.rifaterdemsahin.com/webhook/695e50fd-76de-49c8-950a-0a3b5d074384',
+            off: 'https://n8n.rifaterdemsahin.com/webhook/1dec1b3f-cc53-42ab-a8ff-3a5ce342ca00'
+        };
+
+        async function toggleInternet(action) {
+            const statusDiv = document.getElementById('status');
+            const btnOn = document.getElementById('btnOn');
+            const btnOff = document.getElementById('btnOff');
+            
+            // Disable buttons during request
+            btnOn.disabled = true;
+            btnOff.disabled = true;
+            
+            // Show loading status
+            statusDiv.className = 'status loading show';
+            statusDiv.innerHTML = `Processing request...<span class="spinner"></span>`;
+
+            try {
+                const response = await fetch(webhooks[action], {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    statusDiv.className = 'status success show';
+                    statusDiv.textContent = `✓ Internet turned ${action.toUpperCase()} successfully!`;
+                } else {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.className = 'status error show';
+                statusDiv.textContent = `✕ Error: ${error.message}`;
+            } finally {
+                // Re-enable buttons
+                btnOn.disabled = false;
+                btnOff.disabled = false;
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    statusDiv.classList.remove('show');
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

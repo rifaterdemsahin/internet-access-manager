@@ -1,0 +1,658 @@
+{
+  "name": "turn internet off 8 pm",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "-1002793496878",
+        "text": "=🔴 Internet turned OFF\n---\nCode: {{ $json.code }}\nSignal: {{ $json.signal }}\nStdout: {{ $json.stdout }}\nStderr: {{ $json.stderr }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        528
+      ],
+      "id": "5a747dd7-7fac-4012-bc03-6150422e7c2c",
+      "name": "Send OFF Notification",
+      "webhookId": "40ac5ce8-4444-4737-98d7-8f29ca248a8c",
+      "credentials": {
+        "telegramApi": {
+          "id": "FNhCBbEpIegop14Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-1002793496878",
+        "text": "=🟢 Internet turned ON\n---\nCode: {{ $json.code }}\nSignal: {{ $json.signal }}\nStdout: {{ $json.stdout }}\nStderr: {{ $json.stderr }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        128
+      ],
+      "id": "d6d30c12-5ebd-48dd-8150-5d8f1597b5b8",
+      "name": "Send ON Notification",
+      "webhookId": "40ac5ce8-4444-4737-98d7-8f29ca248a8c",
+      "credentials": {
+        "telegramApi": {
+          "id": "FNhCBbEpIegop14Z",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "sg vyattacfg -c \"/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 disable && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end\""
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        352,
+        208
+      ],
+      "id": "56a8b206-d284-4d73-8476-b52fc314078a",
+      "name": "Enable Internet (Disable DROP Rule)",
+      "credentials": {
+        "sshPassword": {
+          "id": "L7m1ioHetIw6dJpf",
+          "name": "SSH For Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "sg vyattacfg -c \"/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete firewall name INTERNET_CONTROL rule 12 disable && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end\""
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        352,
+        640
+      ],
+      "id": "c37e2393-538e-45f1-812d-6cdf8ec9e76e",
+      "name": "Disable Internet (Enable DROP Rule)",
+      "credentials": {
+        "sshPassword": {
+          "id": "L7m1ioHetIw6dJpf",
+          "name": "SSH For Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "sg vyattacfg -c \"/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 action drop && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 source address 192.168.3.0/24 && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 destination address 0.0.0.0/0 && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 description 'Internet control schedule' && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end\""
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        32,
+        208
+      ],
+      "id": "171ba03a-2300-4db1-95ca-e03cad233d5e",
+      "name": "Check and Create Rule 12",
+      "credentials": {
+        "sshPassword": {
+          "id": "L7m1ioHetIw6dJpf",
+          "name": "SSH For Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "sg vyattacfg -c \"/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 action drop && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 source address 192.168.3.0/24 && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 destination address 0.0.0.0/0 && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name INTERNET_CONTROL rule 12 description 'Internet control schedule' && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save && /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end\""
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        32,
+        640
+      ],
+      "id": "c02b412a-4f27-41ee-9ab8-d05407e7c099",
+      "name": "Check and Create Rule 12 (OFF)",
+      "credentials": {
+        "sshPassword": {
+          "id": "L7m1ioHetIw6dJpf",
+          "name": "SSH For Router"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "✅ **Updated!** I've added two new SSH nodes that will **create Rule 12 if it doesn't exist** before each ON/OFF action.\n\n## What Changed:\n\n### New Workflow Flow:\n\n1. **5 AM Trigger** → **Check and Create Rule 12** → **Enable Internet** → **Send ON Notification**\n2. **8 PM Trigger** → **Check and Create Rule 12 (OFF)** → **Disable Internet** → **Send OFF Notification**\n\n### What the \"Check and Create\" Nodes Do:\n\nThey run this command which will:\n- Create Rule 12 with DROP action\n- Set source: 192.168.3.0/24\n- Set destination: 0.0.0.0/0\n- Add description\n\n**Important:** If Rule 12 already exists, this command will just update it with the correct settings (it won't create a duplicate). VyOS's `set` command is idempotent - it creates if missing, updates if exists.\n\n### Flow Logic:\n\n- **5 AM**: Creates/updates rule → Disables it (Internet ON) → Telegram notification\n- **8 PM**: Creates/updates rule → Enables it (Internet OFF) → Telegram notification\n\nNow your workflow is **fully automated** and will work even if Rule 12 doesn't exist yet! 🎯",
+        "height": 976,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "f3cfa4b4-3c70-4910-8ba9-bfd17fb9bafb",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "London Time!"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -928,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "6eef82bc-22da-4153-965c-26b29c4e260a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "- TURN IT OFF\n- Weekdays\n- Take it back to 7 pm\n- if home not tidy 7 \n- if tidy 9",
+        "height": 672,
+        "width": 1670,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -928,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "26bbcab8-7bb7-4fb5-835a-a465455a7272",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": 49
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "f069b0e7-e31a-4a3e-8311-d231dc12e0bb",
+      "name": "Turn ON at 8 49 back home"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        336
+      ],
+      "id": "507150bf-bfc2-40a8-91cc-f93cb6bffef1",
+      "name": "Turn ON at 5 AM wake up"
+    },
+    {
+      "parameters": {
+        "content": "- TURN IT ON",
+        "height": 656,
+        "width": 1392,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "46385921-2364-424f-8bcd-eb63a8e4b05e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "triggerAtHour": 8,
+              "triggerAtMinute": 23
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        544
+      ],
+      "id": "87944668-116f-4e51-bb90-8fc91d51651f",
+      "name": "Turn OFF For Arya to leave morning"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        160
+      ],
+      "id": "a0a697f9-c5de-47b7-8465-c3b07ef0aecd",
+      "name": "Turn ON at 2 AM open the home internet"
+    },
+    {
+      "parameters": {
+        "content": "night time",
+        "height": 400,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        752
+      ],
+      "typeVersion": 1,
+      "id": "6e36b9cd-5a9a-4305-8108-80a1c369a596",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "sunday no turn off",
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        688
+      ],
+      "typeVersion": 1,
+      "id": "c4bbe1c2-1333-491c-b87a-754542419aff",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        1024
+      ],
+      "id": "261cb5e0-13e6-4d93-bbc2-5f89ee57db1f",
+      "name": "Close at 8"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                0
+              ],
+              "triggerAtHour": 23
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        944
+      ],
+      "id": "6b7052f6-f2c3-455e-8cd2-2ee29643c1a0",
+      "name": "close at 11"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                0
+              ],
+              "triggerAtHour": 21,
+              "triggerAtMinute": 59
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        928
+      ],
+      "id": "b70f5506-f58a-4dc8-ad8c-70433d8fd2d9",
+      "name": "close at 10"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        784
+      ],
+      "id": "6f28bdac-1206-4873-a534-1b37f8d9d146",
+      "name": "Close at 7 tidy off ask"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1dec1b3f-cc53-42ab-a8ff-3a5ce342ca00",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1088,
+        496
+      ],
+      "id": "58f5c451-f5d8-4a13-a154-f88ddb2831af",
+      "name": "Webhook Ece manual kapama",
+      "webhookId": "1dec1b3f-cc53-42ab-a8ff-3a5ce342ca00"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "695e50fd-76de-49c8-950a-0a3b5d074384",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        -112
+      ],
+      "id": "9f86f35a-3d94-4934-bed4-a1d58b9fe46f",
+      "name": "Webhook on",
+      "webhookId": "695e50fd-76de-49c8-950a-0a3b5d074384"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Enable Internet (Disable DROP Rule)": {
+      "main": [
+        [
+          {
+            "node": "Send ON Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disable Internet (Enable DROP Rule)": {
+      "main": [
+        [
+          {
+            "node": "Send OFF Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check and Create Rule 12": {
+      "main": [
+        [
+          {
+            "node": "Enable Internet (Disable DROP Rule)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check and Create Rule 12 (OFF)": {
+      "main": [
+        [
+          {
+            "node": "Disable Internet (Enable DROP Rule)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn ON at 8 49 back home": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn ON at 5 AM wake up": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn OFF For Arya to leave morning": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn ON at 2 AM open the home internet": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close at 8": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "close at 11": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "close at 10": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close at 7 tidy off ask": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Ece manual kapama": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12 (OFF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook on": {
+      "main": [
+        [
+          {
+            "node": "Check and Create Rule 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "5d4c2a4a-0f57-491d-a5be-d9267942a2e1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3df7c7c6cb7e0e978bf80ded11fce953795594ae8fe07b63ac449418b447c9e7"
+  },
+  "id": "E2qGEqFAEFjKV2B7",
+  "tags": [
+    {
+      "updatedAt": "2025-10-03T06:30:17.186Z",
+      "createdAt": "2025-10-03T06:30:17.186Z",
+      "id": "Bfcr4qXXhS2rmjE7",
+      "name": "arya"
+    },
+    {
+      "updatedAt": "2025-09-08T13:50:56.306Z",
+      "createdAt": "2025-09-08T13:50:56.306Z",
+      "id": "Yw51Rg0njUfsoqC3",
+      "name": "inprogress"
+    },
+    {
+      "updatedAt": "2025-09-03T10:58:11.223Z",
+      "createdAt": "2025-09-03T10:58:11.223Z",
+      "id": "aVX3THBx71qHl1Ky",
+      "name": "backlog"
+    },
+    {
+      "updatedAt": "2025-10-03T04:10:03.836Z",
+      "createdAt": "2025-10-03T04:10:03.836Z",
+      "id": "lajmYqYHmEywWrb3",
+      "name": "ssh"
+    }
+  ]
+}
